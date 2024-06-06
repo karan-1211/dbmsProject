@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment</h1>
+        <p>Total Price: <span id="totalPrice"></span></p>
+        <label for="paymentMethod">Select Payment Method:</label>
+        <select id="paymentMethod" onchange="showPaymentOptions()">
+            <option value="select">select</option>
+            <option value="upi">UPI</option>
+            <option value="debitCard">Debit Card</option>
+            <option value="creditCard">Credit Card</option>
+        </select>
+        <div id="upiOptions" style="display:none;">
+            <label for="vpa">VPA:</label>
+            <input type="text" id="vpa" name="vpa" placeholder="Enter your VPA">
+        </div>
+        <div id="debitCardOptions" style="display:none;">
+            <label for="debitCardNumber">Card Number:</label>
+            <input type="text" id="debitCardNumber" name="debitCardNumber" placeholder="Enter your card number">
+            <label for="debitCardCVV">CVV:</label>
+            <input type="text" id="debitCardCVV" name="debitCardCVV" placeholder="Enter CVV">
+            <label for="expiryDate">Expiry Date:</label>
+            <input type="date" id="expiryDate" name="expiryDate">
+        </div>
+        <div id="creditCardOptions" style="display:none;">
+            <label for="creditCardNumber">Card Number:</label>
+            <input type="number" id="creditCardNumber" name="creditCardNumber" placeholder="Enter your card number">
+            <label for="creditCardCVV">CVV:</label>
+            <input type="number" id="creditCardCVV" name="creditCardCVV" placeholder="Enter CVV">
+            <label for="expiryDate">Expiry Date:</label>
+            <input type="date" id="expiryDate" name="expiryDate">
+        </div>
+        <button onclick="bookTicket()">Book Ticket</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const totalPriceElement = document.getElementById('totalPrice');
+            const finalPrice = localStorage.getItem('finalPrice');
+
+            if (!finalPrice) {
+                alert('Total price not found.');
+                window.location.href = 'service-selection.html';
+                return;
+            }
+
+            totalPriceElement.textContent = `Rs.${finalPrice}`;
+        });
+
+        function showPaymentOptions() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            document.getElementById('upiOptions').style.display = 'none';
+            document.getElementById('debitCardOptions').style.display = 'none';
+            document.getElementById('creditCardOptions').style.display = 'none';
+
+            if (paymentMethod === 'upi') {
+                document.getElementById('upiOptions').style.display = 'block';
+            } else if (paymentMethod === 'debitCard') {
+                document.getElementById('debitCardOptions').style.display = 'block';
+            } else if (paymentMethod === 'creditCard') {
+                document.getElementById('creditCardOptions').style.display = 'block';
+            }
+        }
+
+        async function bookTicket() {
+            const flightId = localStorage.getItem('selectedFlightId');
+            const numPassengers = parseInt(localStorage.getItem('numPassengers'), 10);
+
+            try {
+                const response = await fetch('http://localhost:3000/update-seats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        flightId: flightId,
+                        numPassengers: numPassengers
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Ticket booked successfully!');
+                    window.location.href = 'conformation.html';
+                } else {
+                    alert('Failed to book the ticket. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while booking the ticket. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
+
+    

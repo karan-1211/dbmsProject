@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Flights</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url(./view-3d-airplane.jpg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url(./view-3d-airplane\ \(1\).jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input {
+            margin: 10px;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: rgb(237 235 118);
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Flights</h1>
+        <form id="search-form">
+            <input type="text" id="departure" name="departure" placeholder="Departure" required>
+            <input type="text" id="arrival" name="arrival" placeholder="Arrival" required>
+            <button type="button" onclick="searchFlights()">Search</button>
+        </form>
+    </div>
+
+    <script>
+        function searchFlights() {
+            const departure = document.getElementById('departure').value;
+            const arrival = document.getElementById('arrival').value;
+
+            const searchDetails = {
+                departure,
+                arrival
+            };
+
+            localStorage.setItem('searchDetails', JSON.stringify(searchDetails));
+            window.location.href = 'flight-selection.html';
+        }s
+    </script>
+</body>
+</html>

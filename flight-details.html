@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Flight Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
+        }
+
+        .label-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus, button:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+        }
+
+        button {
+            grid-column: span 2;
+            margin-top: 20px;
+            background: #4facfe;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #00f2fe;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        ::placeholder {
+            color: #999;
+        }
+
+        th {
+            background: #00f2fe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Flight Details</h1>
+        <form id="flight-form" action="/submit-flight" method="POST">
+            <div class="label-input-group">
+                <label for="airplane_code">Airplane Code:</label>
+                <input type="number" id="airplane_code" name="airplane_code" placeholder="Airplane Code" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="airplane_name">Airplane Name:</label>
+                <input type="text" id="airplane_name" name="airplane_name" placeholder="Airplane Name" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="departure">Departure:</label>
+                <input type="text" id="departure" name="departure" placeholder="Departure" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="arrival">Arrival:</label>
+                <input type="text" id="arrival" name="arrival" placeholder="Arrival" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="departure_date">Departure Date:</label>
+                <input type="date" id="departure_date" name="departure_date" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="departure_time">Departure Time:</label>
+                <input type="time" id="departure_time" name="departure_time" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="arrival_date">Arrival Date:</label>
+                <input type="date" id="arrival_date" name="arrival_date" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="arrival_time">Arrival Time:</label>
+                <input type="time" id="arrival_time" name="arrival_time" required>
+            </div>
+
+            <div class="label-input-group">
+                <label for="total_seats">Total Seats:</label>
+                <input type="number" id="total_seats" name="total_seats" placeholder="Total Seats" required>
+            </div>
+            
+            <div class="label-input-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" placeholder="Price" required>
+            </div>
+            
+            <button type="submit">Create Flight</button>
+        </form>
+    
+        <div id="flight-details">
+            <h2>Flight Details</h2>
+            <table id="details-table" border="none" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Airplane Code</th>
+                        <th>Airplane Name</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Departure Date</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Date</th>
+                        <th>Arrival Time</th>
+                        <th>Total Seats</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('flight-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            const currentDate = new Date();
+            const departureDate = new Date(data.departure_date);
+            const arrivalDate = new Date(data.arrival_date);
+            const departureTime = data.departure_time;
+            const arrivalTime = data.arrival_time;
+            const totalSeats = parseInt(data.total_seats, 10);
+
+            currentDate.setHours(0, 0, 0, 0);
+            departureDate.setHours(0, 0, 0, 0);
+            arrivalDate.setHours(0, 0, 0, 0);
+
+            const twoDaysFromNow = new Date(currentDate);
+            twoDaysFromNow.setDate(currentDate.getDate() + 2);
+
+            if (departureDate < twoDaysFromNow) {
+                alert('Departure date must be at least 2 days from today.');
+                return;
+            }
+
+            if (arrivalDate < departureDate) {
+                alert('Arrival date cannot be earlier than the departure date.');
+                return;
+            }
+
+            if (departureDate.getTime() === arrivalDate.getTime() && arrivalTime < departureTime) {
+                alert('If departure and arrival dates are the same, arrival time cannot be earlier than departure time.');
+                return;
+            }
+
+            if (isNaN(totalSeats) || totalSeats <= 0) {
+                alert('Total seats must be a positive number.');
+                return;
+            }
+
+            fetch('/submit-flight', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                const tableBody = document.querySelector('#details-table tbody');
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${data.airplane_code}</td>
+                    <td>${data.airplane_name}</td>   
+                    <td>${data.departure}</td>
+                    <td>${data.arrival}</td>
+                    <td>${data.departure_date}</td>
+                    <td>${data.departure_time}</td>
+                    <td>${data.arrival_date}</td>
+                    <td>${data.arrival_time}</td>
+                    <td>${data.total_seats}</td>
+                    <td>${data.price}</td>
+                `;
+
+                tableBody.appendChild(row);
+                document.getElementById('flight-form').reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function allowOnlyAlphabet(input) {
+            const value = input.value;
+            const sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
+            if (value !== sanitizedValue) {
+                input.value = sanitizedValue;
+                alert('Please enter only alphabetic characters.');
+            }
+        }
+
+        document.getElementById('departure').addEventListener('input', function(event) {
+            allowOnlyAlphabet(event.target);
+        });
+
+        document.getElementById('arrival').addEventListener('input', function(event) {
+            allowOnlyAlphabet(event.target);
+        });
+    </script>
+</body>
+</html>

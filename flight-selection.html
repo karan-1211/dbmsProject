@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Flights</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Search Flights</h1>
+        <form id="search-form" action="/search-flights" method="GET">
+            <label for="departure">Departure:</label>
+            <input type="text" id="departure" name="departure" placeholder="Departure" required pattern="[A-Za-z\s]+" title="Departure must contain only alphabets">
+
+            <label for="arrival">Arrival:</label>
+            <input type="text" id="arrival" name="arrival" placeholder="Arrival" required pattern="[A-Za-z\s]+" title="Arrival must contain only alphabets">
+
+            <label for="departure_date">Departure Date:</label>
+            <input type="date" id="departure_date" name="departure_date" required>
+
+            <label for="total_seats">Total Seats:</label>
+            <input type="number" id="total_seats" name="total_seats" placeholder="Total Seats" required min="1" title="Total seats must be a positive number">
+
+            <button type="submit">Search</button>
+        </form>
+        
+        <div id="flight-results">
+            <h2>Flight Results</h2>
+            <table id="results-table" border="1">
+                <thead>
+                    <tr>
+                        <th>Flight ID</th>
+                        <th>Airplane Code</th>
+                        <th>Airplane Name</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Departure Date</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Date</th>
+                        <th>Arrival Time</th>
+                        <th>Total Seats</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Flight results will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            const departure = document.getElementById('departure').value.trim();
+            const arrival = document.getElementById('arrival').value.trim();
+            const departureDate = document.getElementById('departure_date').value;
+            const totalSeats = parseInt(document.getElementById('total_seats').value, 10);
+
+            // Validate departure and arrival inputs to ensure they only contain alphabets
+            const alphabetPattern = /^[A-Za-z\s]+$/;
+            if (!alphabetPattern.test(departure)) {
+                alert('Departure field must contain only alphabets.');
+                return;
+            }
+            if (!alphabetPattern.test(arrival)) {
+                alert('Arrival field must contain only alphabets.');
+                return;
+            }
+
+            // Validate if all required fields are filled
+            if (!departure || !arrival || !departureDate || isNaN(totalSeats)) {
+                alert('All fields are required.');
+                return;
+            }
+
+            // Validate departure date is today or in the future
+            const today = new Date().toISOString().split('T')[0];
+            if (departureDate < today) {
+                alert('No flights available, please enter a valid departure date.');
+                return;
+            }
+
+            // Validate total seats is a positive number
+            if (totalSeats <= 0) {
+                alert('Total seats must be a positive number.');
+                return;
+            }
+    
+            const formData = new FormData(this);
+            const query = new URLSearchParams(formData).toString();
+    
+            fetch(`/search-flights?${query}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length === 0) {
+                        alert('No flights found.');
+                        return;
+                    }
+    
+                    const tableBody = document.querySelector('#results-table tbody');
+                    tableBody.innerHTML = ''; // Clear previous results
+    
+                    data.forEach(flight => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${flight.id}</td>
+                            <td>${flight.airplane_code}</td>
+                            <td>${flight.airplane_name}</td>
+                            <td>${flight.departure}</td>
+                            <td>${flight.arrival}</td>
+                            <td>${flight.departure_date}</td>
+                            <td>${flight.departure_time}</td>
+                            <td>${flight.arrival_date}</td>
+                            <td>${flight.arrival_time}</td>
+                            <td>${flight.total_seats}</td>
+                            <td>${flight.price}</td>
+                            <td><button onclick='proceedToService(${JSON.stringify(flight)})'>Proceed</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching flight results:', error);
+                });
+        });
+    
+        function proceedToService(flight) {
+            localStorage.setItem('selectedFlight', JSON.stringify(flight));
+            window.location.href = 'passenger-details.html';
+        }
+    </script>
+</body>
+</html>

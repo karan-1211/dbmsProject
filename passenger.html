@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Head content here -->
+</head>
+<body>
+    <div class="container">
+        <!-- Service selection form -->
+        <form id="servicesForm">
+            <div class="section">
+                <h2>Food Options</h2>
+                <label>
+                    <input type="checkbox" id="food" name="food"> Include Food
+                </label>
+                <div id="foodOptions" style="display: none;">
+                    <label>
+                        <input type="radio" name="foodType" value="veg"> Veg
+                    </label>
+                    <label>
+                        <input type="radio" name="foodType" value="nonveg"> Non-Veg
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Class of Seat</h2>
+                <select id="seatClass" name="seatClass">
+                    <option value="economy">Economy - 6000</option>
+                    <option value="business">Business Class - 10000</option>
+                    <option value="firstclass">First Class - 3000</option>
+                </select>
+            </div>
+
+            <div class="section">
+                <h2>Additional Comfort Services</h2>
+                <label>
+                    <input type="checkbox" id="entertainment" name="entertainment"> Entertainment
+                </label>
+                <div id="entertainmentMessage" style="display: none;">
+                    All OTT subscription included.
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Total Price</h2>
+                <p id="totalPrice">$0</p>
+            </div>
+
+            <button type="button" id="calculateButton">Calculate Price</button>
+            <button type="button" id="paymentButton">Proceed to Payment</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Other event listeners and functions...
+            const foodCheckbox = document.getElementById('food');
+            const foodOptions = document.getElementById('foodOptions');
+            const entertainmentCheckbox = document.getElementById('entertainment');
+            const entertainmentMessage = document.getElementById('entertainmentMessage');
+            const seatClassSelect = document.getElementById('seatClass');
+            const totalPriceElement = document.getElementById('totalPrice');
+            const calculateButton = document.getElementById('calculateButton');
+            const paymentButton = document.getElementById('paymentButton');
+
+            foodCheckbox.addEventListener('change', () => {
+                foodOptions.style.display = foodCheckbox.checked ? 'block' : 'none';
+            });
+
+            entertainmentCheckbox.addEventListener('change', () => {
+                entertainmentMessage.style.display = entertainmentCheckbox.checked ? 'block' : 'none';
+            });
+
+            calculateButton.addEventListener('click', () => {
+                // Previous calculation logic...
+                let totalPrice = 0;
+
+// Seat class price
+const seatClass = seatClassSelect.value;
+if (seatClass === 'economy') {
+    totalPrice += 6000;
+} else if (seatClass === 'business') {
+    totalPrice += 10000;
+} else if (seatClass === 'firstclass') {
+    totalPrice += 3000;
+}
+
+// Food price
+
+
+// Entertainment price
+if (entertainmentCheckbox.checked) {
+    totalPrice += 1000;
+}
+                // Fetch flight price from the server
+                fetchFlightPrice()
+                    .then(flightPrice => {
+                        totalPrice += parseFloat(flightPrice);
+                        totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching flight price:', error);
+                    });
+            });
+
+            // Function to fetch flight price from the server
+            function fetchFlightPrice() {
+                const selectedFlight = JSON.parse(localStorage.getItem('selectedFlight'));
+                const flightId = selectedFlight.flightId;
+
+                // Replace 'http://localhost:3000' with your actual backend server URL
+                return fetch(`http://localhost:3000/flight-price/${flightId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch flight price');
+                        }
+                        return response.json();
+                    })
+                    .then(data => data.price);
+            }
+        });
+    </script>
+</body>
+</html>

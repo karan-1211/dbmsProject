@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airplane Services</title>
+   
+   
+    <style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+input, select, button {
+    margin: 10px;
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    background: #f7f7f7;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+}
+
+button {
+    background-color: #4facfe;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #00f2fe;
+}
+
+.passenger-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.passenger-details input,
+.passenger-details select {
+    width: 100%;
+}
+
+.passenger-header {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-section {
+    width: 100%;
+}
+
+/* Additional Styles for Visual Appeal */
+::placeholder {
+    color: #999;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M15.5 7.5l-5 5-5-5h10z"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 10px);
+    background-position-y: center;
+    background-size: 16px;
+    padding-right: 30px;
+}
+
+    </style>
+</head>
+
+   </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Airplane Services</h1>
+        <form id="servicesForm">
+            <div class="section">
+                <h2>Food Options</h2>
+                <label>
+                    <input type="checkbox" id="food" name="food"> Include Food
+                </label>
+                <div id="foodOptions" style="display: none;">
+                    <label>
+                        <input type="radio" name="foodType" value="veg"> Veg
+                    </label>
+                    <label>
+                        <input type="radio" name="foodType" value="nonveg"> Non-Veg
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Class of Seat</h2>
+                <select id="seatClass" name="seatClass">
+                    <option value="economy">Economy - 6000</option>
+                    <option value="business">Business Class - 10000</option>
+                    <option value="firstclass">First Class - 3000</option>
+                </select>
+            </div>
+              <div ><input type="hidden" id="flightId" name="flightId"></div>
+              
+            <div class="section">
+                <h2>Additional Comfort Services</h2>
+                <label>
+                    <input type="checkbox" id="entertainment" name="entertainment"> Entertainment
+                </label>
+                <div id="entertainmentMessage" style="display: none;">
+                    All OTT subscription included.
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Total Price</h2>
+                <p id="totalPrice">$0</p>
+            </div>
+
+            <button type="button" id="calculateButton">Calculate Price</button>
+            <button type="button" id="paymentButton">Proceed to Payment</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const foodCheckbox = document.getElementById('food');
+            const foodOptions = document.getElementById('foodOptions');
+            const entertainmentCheckbox = document.getElementById('entertainment');
+            const entertainmentMessage = document.getElementById('entertainmentMessage');
+            const seatClassSelect = document.getElementById('seatClass');
+            const totalPriceElement = document.getElementById('totalPrice');
+            const calculateButton = document.getElementById('calculateButton');
+            const paymentButton = document.getElementById('paymentButton');
+            const flightIdInput = document.getElementById('flightId');
+        
+            // Retrieve flight data from localStorage
+            const flight = JSON.parse(localStorage.getItem('selectedFlight'));
+            let basePrice = 0;
+    
+            if (flight && flight.price) {
+                basePrice = parseFloat(flight.price);
+                flightIdInput.value = flight.id; // Set the hidden input value
+            }
+           
+            const numPassengers = localStorage.getItem('numPassengers');
+            if (!numPassengers) {
+                alert('Number of passengers not found.');
+                window.location.href = 'passenger-details.html';
+                return;
+            }
+        
+    
+            // Initialize total price with flight base price
+            let totalPrice = basePrice;
+            totalPriceElement.textContent = `Rs.${totalPrice}`;
+    
+            foodCheckbox.addEventListener('change', () => {
+                foodOptions.style.display = foodCheckbox.checked ? 'block' : 'none';
+            });
+    
+            entertainmentCheckbox.addEventListener('change', () => {
+                entertainmentMessage.style.display = entertainmentCheckbox.checked ? 'block' : 'none';
+            });
+    
+            calculateButton.addEventListener('click', () => {
+                totalPrice = basePrice;
+    
+                // Seat class price
+                const seatClass = seatClassSelect.value;
+                if (seatClass === 'economy') {
+                    totalPrice += 6000;
+                } else if (seatClass === 'business') {
+                    totalPrice += 10000;
+                } else if (seatClass === 'firstclass') {
+                    totalPrice += 3000;
+                }
+    
+                // Food price
+                if (foodCheckbox.checked) {
+                    totalPrice += 50;
+                }
+    
+                // Entertainment price
+                if (entertainmentCheckbox.checked) {
+                    totalPrice += 30;
+                }
+                const finalPrice = totalPrice * numPassengers;
+                localStorage.setItem('finalPrice', finalPrice);
+                totalPriceElement.textContent = `Rs.${totalPrice * numPassengers}`;
+            });
+    
+            paymentButton.addEventListener('click', () => {
+                const foodIncluded = foodCheckbox.checked;
+                const foodType = document.querySelector('input[name="foodType"]:checked')?.value;
+                const entertainmentIncluded = entertainmentCheckbox.checked;
+                const seatClass = seatClassSelect.value;
+    
+                const postData = {
+                    flightId: flightIdInput.value,
+                    foodIncluded,
+                    foodType,
+                    entertainmentIncluded,
+                    seatClass,
+                    numPassengers,
+                    totalPrice: localStorage.getItem('finalPrice')
+                };
+    
+                fetch('http://localhost:3000/save-services', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Services saved successfully');
+                        window.location.href = 'payment.html';
+                    } else {
+                        alert('Failed to save services');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error saving services');
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
+        
+    

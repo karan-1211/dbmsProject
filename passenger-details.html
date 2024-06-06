@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('./view-3d-airplane.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            width: calc(50% - 20px);
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            background: #fff;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        input:focus, select:focus, button:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+        }
+
+        button {
+            background-color: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00f2fe;
+        }
+
+        .passenger-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .passenger-details input,
+        .passenger-details select {
+            width: 100%;
+        }
+
+        .passenger-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-section {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Passenger Details</h1>
+        <form id="initial-form">
+            <input type="number" id="num-passengers" name="num-passengers" placeholder="Number of Passengers" min="1" required>
+            <button type="button" onclick="generatePassengerForms()">Next</button>
+        </form>
+        <form id="passenger-form" style="display: none;">
+            <div id="passenger-forms-container"></div>
+            <input type="hidden" id="flightId" name="flightId">
+            <button type="button" onclick="nextPage()">Next</button>
+        </form>
+    </div>
+
+    <script>
+        function generatePassengerForms() {
+            const numPassengers = document.getElementById('num-passengers').value;
+            const selectedFlight = JSON.parse(localStorage.getItem('selectedFlight'));
+            const flightId = localStorage.getItem('selectedFlightId');
+            const totalSeats = selectedFlight ? selectedFlight.total_seats : 0;
+
+            if (numPassengers < 1) {
+                alert('Please enter a valid number of passengers.');
+                return;
+            }
+
+            if (numPassengers > totalSeats) {
+                alert(`Number of passengers cannot exceed the total seats available (${totalSeats}).`);
+                return;
+            }
+
+            const passengerFormsContainer = document.getElementById('passenger-forms-container');
+            passengerFormsContainer.innerHTML = '';
+
+            for (let i = 1; i <= numPassengers; i++) {
+                passengerFormsContainer.innerHTML += `
+                    <div class="form-section">
+                        <h3 class="passenger-header">Passenger ${i}</h3>
+                        <div class="passenger-details">
+                            <input type="text" id="name-${i}" name="name-${i}" placeholder="Name" required>
+                            <input type="date" id="dob-${i}" name="dob-${i}" required>
+                            <select id="gender-${i}" name="gender-${i}" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="tel" id="phone_no-${i}" name="phone_no-${i}" placeholder="Phone Number" required>
+                            <input type="email" id="email-${i}" name="email-${i}" placeholder="Email" required>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('initial-form').style.display = 'none';
+            document.getElementById('passenger-form').style.display = 'block';
+            document.getElementById('flightId').value = flightId;
+        }
+
+        function nextPage() {
+            const numPassengers = document.getElementById('num-passengers').value;
+            const flightId = document.getElementById('flightId').value;
+            const passengers = [];
+
+            for (let i = 1; i <= numPassengers; i++) {
+                const name = document.getElementById(`name-${i}`).value;
+                const dob = document.getElementById(`dob-${i}`).value;
+                const gender = document.getElementById(`gender-${i}`).value;
+                const phone_no = document.getElementById(`phone_no-${i}`).value;
+                const email = document.getElementById(`email-${i}`).value;
+
+                passengers.push({
+                    flightId,
+                    name,
+                    dob,
+                    gender,
+                    phone_no,
+                    email
+                });
+            }
+
+            localStorage.setItem('numPassengers', numPassengers);
+            localStorage.setItem('passengerDetails', JSON.stringify(passengers));
+
+            // Save passenger details to the database
+            fetch('http://localhost:3000/save-passenger-details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ passengers })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = 'service-selection.html';
+                } else {
+                    alert('Failed to save passenger details. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving passenger details.');
+            });
+        }
+    </script>
+</body>
+</html>

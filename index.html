@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Reservation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url(./view-3d-airplane.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        h1{
+            color:white;
+            margin-left: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background:transparent;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 60px;
+            backdrop-filter: blur(20px);
+        }
+
+        .options button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: rgb(237 235 118);
+            border-radius: 10px;
+            border: none;
+        }
+
+        .ab{
+              color:black;
+        }
+    </style>
+</head>
+<body>
+   
+    <div class="container">
+        <h1 class="ab">Airline Reservation System</h1>
+        <div class="options">
+            <button onclick="window.location.href='owner-login.html'">Owner</button>
+            <button onclick="window.location.href='register.html'">Passenger</button>
+        </div>
+    </div>
+</body>
+</html>

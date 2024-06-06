@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .details {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .details p {
+            margin: 10px 0;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Booking Confirmation</h1>
+        <h2>Thank you for booking with us!</h2>
+        <div class="details" id="booking-details">
+            <!-- Booking details will be inserted here -->
+        </div>
+        <div class="button-container">
+            <button onclick="goHome()">Go to Homepage</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Assume we have stored booking details in local storage
+            const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {
+                name: 'John Doe',
+                flightId: 'AB1234',
+                departure: 'New York',
+                arrival: 'Los Angeles',
+                departureDate: '2024-06-15',
+                departureTime: '08:00 AM',
+                arrivalDate: '2024-06-15',
+                arrivalTime: '11:00 AM',
+                seatClass: 'Business Class',
+                totalPrice: 15000
+            };
+
+            // Populate booking details
+            const bookingDetailsContainer = document.getElementById('booking-details');
+            bookingDetailsContainer.innerHTML = `
+                <p><strong>Name:</strong> ${bookingDetails.name}</p>
+                <p><strong>Flight ID:</strong> ${bookingDetails.flightId}</p>
+                <p><strong>Departure:</strong> ${bookingDetails.departure}</p>
+                <p><strong>Arrival:</strong> ${bookingDetails.arrival}</p>
+                <p><strong>Departure Date:</strong> ${bookingDetails.departureDate}</p>
+                <p><strong>Departure Time:</strong> ${bookingDetails.departureTime}</p>
+                <p><strong>Arrival Date:</strong> ${bookingDetails.arrivalDate}</p>
+                <p><strong>Arrival Time:</strong> ${bookingDetails.arrivalTime}</p>
+                <p><strong>Seat Class:</strong> ${bookingDetails.seatClass}</p>
+                <p><strong>Total Price:</strong> $${bookingDetails.totalPrice.toFixed(2)}</p>
+            `;
+        });
+
+        function goHome() {
+            // Redirect to homepage or desired page
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

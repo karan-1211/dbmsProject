@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    background: url(./WhatsApp\ Image\ 2024-05-23\ at\ 22.37.07_c3d18f29.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size:cover;
+    
+    
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    background: transparent;
+
+}
+
+h1 {
+    text-align: center;
+    padding: 10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input, select, button {
+    margin: 10px;
+    padding: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+    background-color:lightgoldenrodyellow ;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+button{
+    background-color: #5e4c4c;
+    color:white;
+    border-radius: 20px;
+}
